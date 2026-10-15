@@ -8,8 +8,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-slate-100 antialiased" style={{ overflowX: 'hidden' }}>
       <Navbar />
-      {/* Main content offset by sidebar width */}
-      <div className="pl-16" style={{ overflowX: 'hidden' }}>
+      <div className="pt-0 min-[753px]:pl-16" style={{ overflowX: 'hidden' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<ProjectsPage />} />

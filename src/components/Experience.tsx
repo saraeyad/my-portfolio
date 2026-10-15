@@ -239,15 +239,15 @@ export function Experience() {
                 {/* 1. Card side (45%) */}
                 <div className="w-full md:w-[45%]">
                   <motion.div
-                    className={`rounded-2xl border border-white/10 bg-[#0a0a0f]/70 p-6 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-500/5 ${
+                    className={`rounded-2xl border border-white/10 bg-[#0a0a0f]/70 p-6 text-left backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:-translate-y-1 hover:shadow-xl hover:shadow-cyan-500/5 ${
                       isEven
-                        ? `text-right md:border-r-4 ${accent.borderR}`
-                        : `text-left md:border-l-4 ${accent.border}`
+                        ? `md:text-right md:border-r-4 ${accent.borderR}`
+                        : `md:text-left md:border-l-4 ${accent.border}`
                     }`}
                     whileHover={{ y: -4 }}
                   >
                     <div
-                      className={`mb-4 flex flex-wrap items-center gap-2 ${isEven ? "justify-end" : "justify-start"}`}
+                      className={`mb-4 flex flex-wrap items-center gap-2 justify-start ${isEven ? "md:justify-end" : "md:justify-start"}`}
                     >
                       <span className="text-xl">{job.icon}</span>
                       <span
@@ -269,7 +269,7 @@ export function Experience() {
 
                     {stats.length > 0 && (
                       <div
-                        className={`mb-4 flex flex-wrap gap-2 ${isEven ? "justify-end" : "justify-start"}`}
+                        className={`mb-4 flex flex-wrap gap-2 justify-start ${isEven ? "md:justify-end" : "md:justify-start"}`}
                       >
                         {stats.map((stat, j) => (
                           <span
@@ -283,12 +283,12 @@ export function Experience() {
                     )}
 
                     <ul
-                      className={`space-y-2 ${isEven ? "text-right" : "text-left"}`}
+                      className={`space-y-2 text-left ${isEven ? "md:text-right" : "md:text-left"}`}
                     >
                       {job.bullets.map((bullet, j) => (
                         <li
                           key={j}
-                          className={`flex gap-2 text-slate-400 ${isEven ? "flex-row-reverse" : ""} before:shrink-0 before:content-['•'] ${accent.bullet}`}
+                          className={`flex gap-2 text-slate-400 ${isEven ? "md:flex-row-reverse" : ""} before:shrink-0 before:content-['•'] ${accent.bullet}`}
                         >
                           {bullet}
                         </li>

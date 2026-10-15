@@ -1,4 +1,5 @@
 import { Fragment, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { DecoderText } from "../../components/DecoderText";
 import { Transition } from "../../components/Transition";
 import { useInViewport } from "../../hooks/useInViewport";
@@ -45,8 +46,8 @@ function ProfileText({
       >
         {tagline}
       </p>
-      <a
-        href={`mailto:${portfolioData.email}`}
+      <Link
+        to="/contact"
         className="profile-button inline-flex items-center gap-2 rounded-lg border border-white/20 px-6 py-3.5 font-medium text-white transition hover:border-cyan-500/50 hover:bg-white/5"
         data-visible={visible}
       >
@@ -61,7 +62,7 @@ function ProfileText({
           <path d="M22 2 11 13M22 2 15 22 11 13 2 9l20-7z" />
         </svg>
         Send me a message
-      </a>
+      </Link>
     </Fragment>
   );
 }

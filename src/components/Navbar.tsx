@@ -6,16 +6,16 @@ const { name, whatsapp, email } = config;
 const mailto = `mailto:${email}`;
 
 const navLinks = [
-  { to: "/projects", label: "Projects" }, // Projects page
-  { to: "/#details", label: "About" }, // Scroll to about section on home
-  { to: "/contact", label: "Contact" }, // Contact page
-  { to: "/experience", label: "Experience" }, // Experience page
+  { to: "/projects", label: "Projects" },
+  { to: "/#details", label: "About" },
+  { to: "/contact", label: "Contact" },
+  { to: "/#experience", label: "Experience" },
 ];
 
 export function Navbar() {
   return (
     <motion.nav
-      className="fixed left-0 top-0 z-50 flex h-screen w-25 flex-col items-center justify-between border-r border-white/5 bg-[#0a0a0f]/90 py-6 backdrop-blur-sm"
+      className="relative z-50 flex h-16 w-full items-center justify-between border-b border-white/5 bg-[#0a0a0f]/90 px-4 backdrop-blur-sm min-[753px]:fixed min-[753px]:left-0 min-[753px]:top-0 min-[753px]:h-screen min-[753px]:w-23 min-[753px]:flex-col min-[753px]:justify-between min-[753px]:border-b-0 min-[753px]:border-r min-[753px]:px-0 min-[753px]:py-6"
       initial={{ x: -20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -23,23 +23,18 @@ export function Navbar() {
       {/* Logo */}
       <Link
         to="/"
-        className="flex h-10 w-10 shrink-0 items-center justify-center text-4xl font-bold text-white"
+        className="flex h-10 w-10 shrink-0 items-center justify-center text-2xl font-bold text-white min-[753px]:text-4xl"
         aria-label="Home"
       >
         {name.charAt(0)}
       </Link>
 
-      {/* Vertical nav links - rotated 90deg counter-clockwise, read bottom-to-top */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-8">
+      <div className="flex max-w-[62vw] items-center gap-3 overflow-x-auto whitespace-nowrap pr-1 min-[753px]:max-w-none min-[753px]:flex-1 min-[753px]:flex-col min-[753px]:justify-center min-[753px]:gap-8 min-[753px]:overflow-visible min-[753px]:whitespace-normal min-[753px]:pr-0">
         {navLinks.map((link) => (
           <Link
             key={link.to}
             to={link.to}
-            className="block text-sm font-medium text-white transition hover:text-[var(--accent)]"
-            style={{
-              writingMode: "vertical-rl",
-              transform: "rotate(-180deg)",
-            }}
+            className="nav-link-vertical nav-link-accent-hover block shrink-0 text-xs font-medium text-white transition min-[753px]:text-sm"
             onClick={(e) => {
               if (
                 link.to.startsWith("/#") &&
@@ -57,8 +52,7 @@ export function Navbar() {
         ))}
       </div>
 
-      {/* Social icons at bottom */}
-      <div className="flex flex-col items-center gap-4">
+      <div className="hidden items-center gap-4 min-[753px]:flex min-[753px]:flex-col">
         <motion.a
           href={whatsapp}
           target="_blank"

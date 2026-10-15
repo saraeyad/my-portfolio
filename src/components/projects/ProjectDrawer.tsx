@@ -15,6 +15,10 @@ export interface ProjectWithDetails {
 
 const INTERVAL = 3000;
 
+function isVideoSource(src: string) {
+  return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(src);
+}
+
 interface ProjectDrawerProps {
   project: ProjectWithDetails;
   onClose: () => void;
@@ -24,15 +28,22 @@ export function ProjectDrawer({ project, onClose }: ProjectDrawerProps) {
   const [drawerImgIdx, setDrawerImgIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const hasImages = project.images.length > 0;
+  const currentSrc = project.images[drawerImgIdx] ?? "";
+  const isVideo = isVideoSource(currentSrc);
 
   useEffect(() => {
-    if (!hasImages || paused) return;
+    setDrawerImgIdx(0);
+    setPaused(false);
+  }, [project.id]);
+
+  useEffect(() => {
+    if (!hasImages || paused || isVideo) return;
     const id = setInterval(
       () => setDrawerImgIdx((i) => (i + 1) % project.images.length),
       INTERVAL,
     );
     return () => clearInterval(id);
-  }, [paused, project.images.length, hasImages]);
+  }, [paused, project.images.length, hasImages, isVideo]);
 
   const goTo = (idx: number) => {
     setDrawerImgIdx(idx);
@@ -165,26 +176,54 @@ export function ProjectDrawer({ project, onClose }: ProjectDrawerProps) {
             {hasImages ? (
               <>
                 <AnimatePresence mode="wait">
-                  <motion.img
-                    key={drawerImgIdx}
-                    src={project.images[drawerImgIdx]}
-                    alt={
-                      project.labels[drawerImgIdx] ??
-                      `Screen ${drawerImgIdx + 1}`
-                    }
-                    initial={{ opacity: 0, scale: 1.04 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4 }}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
+                  {isVideo ? (
+                    <motion.video
+                      key={drawerImgIdx}
+                      src={currentSrc}
+                      autoPlay
+                      muted
+                      playsInline
+                      controls
+                      onEnded={() => {
+                        if (paused) return;
+                        setDrawerImgIdx(
+                          (i) => (i + 1) % project.images.length,
+                        );
+                      }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                        background: "#0a0a0f",
+                        display: "block",
+                      }}
+                    />
+                  ) : (
+                    <motion.img
+                      key={drawerImgIdx}
+                      src={currentSrc}
+                      alt={
+                        project.labels[drawerImgIdx] ??
+                        `Screen ${drawerImgIdx + 1}`
+                      }
+                      initial={{ opacity: 0, scale: 1.04 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                  )}
                 </AnimatePresence>
-                {!paused && (
+                {!paused && !isVideo && (
                   <motion.div
                     key={`${drawerImgIdx}-bar`}
                     initial={{ scaleX: 0 }}
@@ -203,7 +242,11 @@ export function ProjectDrawer({ project, onClose }: ProjectDrawerProps) {
                 )}
                 <div
                   className="drawer-panel__image-badge"
-                  style={{ position: "absolute", bottom: 10, left: 12 }}
+                  style={{
+                    position: "absolute",
+                    left: 12,
+                    ...(isVideo ? { top: 10 } : { bottom: 10 }),
+                  }}
                 >
                   {project.labels[drawerImgIdx] ?? `Screen ${drawerImgIdx + 1}`}
                 </div>
@@ -239,15 +282,17 @@ export function ProjectDrawer({ project, onClose }: ProjectDrawerProps) {
                     </button>
                   </>
                 )}
-                <button
-                  type="button"
-                  onClick={() => setPaused((p) => !p)}
-                  className="drawer-panel__play-btn"
-                  style={{ position: "absolute", bottom: 10, right: 12 }}
-                  aria-label={paused ? "Play" : "Pause"}
-                >
-                  {paused ? "▶️" : "⏸"}
-                </button>
+                {!isVideo && (
+                  <button
+                    type="button"
+                    onClick={() => setPaused((p) => !p)}
+                    className="drawer-panel__play-btn"
+                    style={{ position: "absolute", bottom: 10, right: 12 }}
+                    aria-label={paused ? "Play" : "Pause"}
+                  >
+                    {paused ? "▶️" : "⏸"}
+                  </button>
+                )}
               </>
             ) : (
               <div

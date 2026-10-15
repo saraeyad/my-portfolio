@@ -960,6 +960,24 @@ body {
   background: color-mix(in lab, var(--bg-primary) 98%, #0f1118);
 }
 
+/* Navbar link orientation */
+.nav-link-vertical {
+  writing-mode: vertical-rl;
+  transform: rotate(-180deg);
+}
+
+.nav-link-accent-hover:hover {
+  color: var(--accent);
+}
+
+/* On small screens, keep labels horizontal so they fit in the top bar */
+@media (max-width: 752px) {
+  .nav-link-vertical {
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+}
+
 .drawer-panel__header {
   position: sticky;
   top: 0;

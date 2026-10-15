@@ -14,6 +14,7 @@ export function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!isValid) return
     setStatus('sending')
 
     const subject = encodeURIComponent('Portfolio contact')
@@ -40,7 +41,7 @@ export function ContactPage() {
         />
 
         {status !== 'sent' ? (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
             <div>
               <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-400">
                 Your email

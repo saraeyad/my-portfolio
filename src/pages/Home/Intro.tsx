@@ -38,7 +38,7 @@ export function Intro({ id = 'intro', sectionRef, scrollIndicatorHidden = false 
       id={id}
       aria-labelledby={titleId}
       tabIndex={-1}
-      className="intro relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0a0a0f] pt-20"
+      className="intro relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0a0a0f] pt-10 min-[753px]:pt-20"
     >
       <Suspense fallback={null}>
         <DisplacementSphere />

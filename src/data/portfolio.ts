@@ -19,7 +19,7 @@ export const portfolioData = {
 
   stats: {
     yearsExp: "2+",
-    projects: "5+",
+    projects: "6+",
     happyClients: "15+",
     satisfaction: "99%",
   },
@@ -77,6 +77,23 @@ export const portfolioData = {
   projects: [
     {
       id: "1",
+      title: "Sabbara Post",
+      subtitle: "Palestinian Newsroom",
+      description:
+        "A Palestinian media platform that tells everyday stories, with an editorial dashboard for public trust. Editors review coverage on accuracy, credibility, objectivity, and transparency, and follow platform ratings from one place.",
+      tags: ["Newsroom", "Trust Analytics", "Arabic / RTL", "Dashboard"],
+      color: "#be123c",
+      liveUrl: "https://sabbarapost.org",
+      images: [
+        "/SabbaraPost/sabbara-live.jpg",
+        "/SabbaraPost/publishing-flow.mp4",
+        "/SabbaraPost/sabbara-trust.webp",
+        "/SabbaraPost/sabbara-ratings.webp",
+      ],
+      labels: ["Live site", "Publishing flow", "Trust index", "Platform ratings"],
+    },
+    {
+      id: "2",
       title: "Eco-Sync",
       subtitle: "Environmental Sustainability Platform",
       description:
@@ -101,7 +118,7 @@ export const portfolioData = {
       labels: ["Overview"],
     },
     {
-      id: "2",
+      id: "3",
       title: "E-commerce Store",
       subtitle: "Modern Web Application",
       description:
@@ -120,7 +137,7 @@ export const portfolioData = {
       labels: [],
     },
     {
-      id: "3",
+      id: "4",
       title: "Book Mark Manager",
       subtitle: "Bookmark Organization Tool",
       description:
@@ -143,7 +160,7 @@ export const portfolioData = {
       labels: [],
     },
     {
-      id: "4",
+      id: "5",
       title: "Healthy Recipe Finder",
       subtitle: "Nutrition & Meal Planning",
       description:
@@ -161,7 +178,7 @@ export const portfolioData = {
       labels: ["Overview"],
     },
     {
-      id: "5",
+      id: "6",
       title: "Note App",
       subtitle: "Personal Note-Taking",
       description:
