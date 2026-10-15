@@ -132,6 +132,10 @@ export function Profile({
                     <img
                       src={portfolioData.profileImage}
                       alt={`${config.name} profile`}
+                      width={480}
+                      height={640}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover"
                     />
                   ) : (

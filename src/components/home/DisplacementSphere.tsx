@@ -80,7 +80,7 @@ export function DisplacementSphere() {
       shader.fragmentShader = fragmentShader
     }
 
-    geometry.current = new SphereGeometry(32, 128, 128)
+    geometry.current = new SphereGeometry(32, 64, 64)
     sphere.current = new Mesh(geometry.current, material.current)
     sphere.current.position.z = 0
     ;(sphere.current as Mesh & { modifier?: number }).modifier = Math.random()
@@ -144,15 +144,19 @@ export function DisplacementSphere() {
   }, [isInViewport, reduceMotion, rotationX, rotationY])
 
   useEffect(() => {
-    let animation: number
+    let animation = 0
+    let last = 0
 
-    const animate = () => {
+    const animate = (now: number) => {
       animation = requestAnimationFrame(animate)
+      if (document.hidden || now - last < 32) return
+      const delta = last === 0 ? 16.67 : now - last
+      last = now
       if (uniforms.current) {
         uniforms.current.time.value = 0.00005 * (Date.now() - start.current)
       }
       if (sphere.current) {
-        sphere.current.rotation.z += 0.001
+        sphere.current.rotation.z += 0.00006 * delta
         sphere.current.rotation.x = rotationX.get()
         sphere.current.rotation.y = rotationY.get()
       }
@@ -162,7 +166,7 @@ export function DisplacementSphere() {
     }
 
     if (!reduceMotion && isInViewport) {
-      animate()
+      animation = requestAnimationFrame(animate)
     } else if (renderer.current && scene.current && camera.current) {
       renderer.current.render(scene.current, camera.current)
     }

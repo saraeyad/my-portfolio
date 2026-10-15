@@ -90,6 +90,7 @@ const getPositionValues = (section: SectionRef | undefined) => {
 const clamp = (n: number, min: number, max: number) =>
   Math.min(Math.max(n, min), max);
 const numToPx = (n: number) => `${n}px`;
+const labelVector = new Vector3();
 
 // ─── Spring configs ───────────────────────────────────────────────────────────
 
@@ -160,6 +161,7 @@ export const Earth = ({
   const controls = useRef<OrbitControls | null>(null);
   const contentAdded = useRef(false);
   const mounted = useRef(false);
+  const lastFrame = useRef(0);
   const { width: windowWidth, height: windowHeight } = useWindowSize();
   const reduceMotion = useReducedMotion();
 
@@ -167,35 +169,36 @@ export const Earth = ({
   const cameraYSpring = useSpring(0, cameraSpringConfig);
   const cameraZSpring = useSpring(0, cameraSpringConfig);
 
-  const renderFrame = useCallback(() => {
+  const renderFrame = useCallback((time?: number) => {
     if (!inViewport) {
       cancelAnimationFrame(animationFrame.current);
       return;
     }
 
     animationFrame.current = requestAnimationFrame(renderFrame);
+    if (document.hidden) return;
 
-    // Slowly auto-rotate the Earth
+    const now = time ?? performance.now();
+    if (now - lastFrame.current < 32) return;
+    const delta = lastFrame.current === 0 ? 16.67 : now - lastFrame.current;
+    lastFrame.current = now;
+
     if (earthMesh.current) {
-      earthMesh.current.rotation.y += 0.0005;
+      earthMesh.current.rotation.y += 0.00003 * delta;
     }
 
-    // Apply spring values to camera and atmosphere each frame
     if (camera.current && !grabbing) {
       camera.current.position.x = cameraXSpring.get();
       camera.current.position.y = cameraYSpring.get();
       camera.current.position.z = cameraZSpring.get();
     }
-    controls.current?.update();
     if (renderer.current && scene.current && camera.current) {
       renderer.current.render(scene.current, camera.current);
     }
 
-    // Render labels
     labelElements.current.forEach((label) => {
       const { element, position, sprite } = label;
-      const vector = new Vector3(...position);
-
+      if (element.dataset.hidden === "true") return;
       if (!earthMesh.current || !camera.current) return;
 
       const meshDistance = camera.current.position.distanceTo(
@@ -204,17 +207,23 @@ export const Earth = ({
       const spriteDistance = camera.current.position.distanceTo(
         sprite.position,
       );
-      const spriteBehindObject = spriteDistance > meshDistance;
+      const occluded = String(spriteDistance > meshDistance);
+      if (element.dataset.occluded !== occluded) {
+        element.dataset.occluded = occluded;
+      }
 
-      vector.project(camera.current);
-      vector.x = Math.round((0.5 + vector.x / 2) * window.innerWidth);
-      vector.y = Math.round((0.5 - vector.y / 2) * window.innerHeight);
-      element.style.setProperty("--posX", numToPx(vector.x));
-      element.style.setProperty("--posY", numToPx(vector.y));
-
-      element.dataset.occluded = String(spriteBehindObject);
+      labelVector.set(position[0], position[1], position[2]);
+      labelVector.project(camera.current);
+      const x = Math.round((0.5 + labelVector.x / 2) * window.innerWidth);
+      const y = Math.round((0.5 - labelVector.y / 2) * window.innerHeight);
+      const node = element as HTMLElement & { _lx?: number; _ly?: number };
+      if (node._lx === x && node._ly === y) return;
+      node._lx = x;
+      node._ly = y;
+      element.style.setProperty("--posX", numToPx(x));
+      element.style.setProperty("--posY", numToPx(y));
     });
-  }, [inViewport]);
+  }, [inViewport, grabbing, cameraXSpring, cameraYSpring, cameraZSpring]);
 
   // Init scene
   useEffect(() => {
@@ -223,7 +232,7 @@ export const Earth = ({
 
     renderer.current = new WebGLRenderer({
       canvas: canvas.current!,
-      antialias: true,
+      antialias: false,
       alpha: false,
       powerPreference: "high-performance",
     });
@@ -327,8 +336,10 @@ export const Earth = ({
         earthMap.colorSpace = SRGBColorSpace;
         earthMap.minFilter = LinearMipMapLinearFilter;
         earthMap.magFilter = LinearFilter;
-        earthMap.anisotropy =
-          renderer.current?.capabilities.getMaxAnisotropy() ?? 4;
+        earthMap.anisotropy = Math.min(
+          4,
+          renderer.current?.capabilities.getMaxAnisotropy() ?? 4,
+        );
         earthMap.needsUpdate = true;
 
         // ── Background: real nebula/space texture (like reference) ─────────────
@@ -341,7 +352,7 @@ export const Earth = ({
         }
 
         // ── Earth sphere — high segment count avoids visible geometry ribs ─────
-        const geo = new SphereGeometry(1, 128, 128);
+        const geo = new SphereGeometry(1, 64, 64);
         const mat = new MeshPhongMaterial({
           map: earthMap,
           specular: 0x333333,

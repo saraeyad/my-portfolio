@@ -1,10 +1,51 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Intro } from "./Intro";
 import { ProjectSummary } from "./ProjectSummary";
 import { Profile } from "./Profile";
 import { Footer } from "../../components/Footer";
 import { portfolioData } from "../../data/portfolio";
-import { Experience } from "../../components/Experience";
+
+const Experience = lazy(() =>
+  import("../../components/Experience").then((m) => ({ default: m.Experience })),
+);
+
+function DeferredExperience() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setShow(true);
+      },
+      { rootMargin: "600px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  if (show) {
+    return (
+      <Suspense
+        fallback={
+          <section id="experience" className="min-h-[70vh] bg-[#0a0a0f]" />
+        }
+      >
+        <Experience />
+      </Suspense>
+    );
+  }
+
+  return (
+    <section
+      ref={sectionRef}
+      id="experience"
+      className="min-h-[70vh] bg-[#0a0a0f]"
+    />
+  );
+}
 
 export function Home() {
   const [visibleSections, setVisibleSections] = useState<Element[]>([]);
@@ -89,7 +130,7 @@ export function Home() {
         }
         id="details"
       />
-      <Experience />
+      <DeferredExperience />
 
       <Footer />
     </main>

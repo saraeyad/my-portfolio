@@ -129,7 +129,7 @@ export function Model({
       failIfMajorPerformanceCaveat: false,
     })
 
-    renderer.current.setPixelRatio(2)
+    renderer.current.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25))
     renderer.current.setSize(clientWidth, clientHeight)
     renderer.current.outputColorSpace = SRGBColorSpace
 
@@ -154,7 +154,7 @@ export function Model({
     shadowGroup.current.position.set(0, 0, -0.8)
     shadowGroup.current.rotateX(Math.PI / 2)
 
-    const renderTargetSize = 512
+    const renderTargetSize = 256
     const planeWidth = 8
     const planeHeight = 8
     const cameraHeight = 1.5
@@ -274,7 +274,6 @@ export function Model({
     scene.current!.overrideMaterial = null
 
     blurShadow(blurAmount)
-    blurShadow(blurAmount * 0.4)
 
     renderer.current!.setRenderTarget(null)
     scene.current!.background = initialBackground

@@ -1,4 +1,4 @@
-import { Suspense, useRef, useMemo } from "react";
+import { Suspense, useEffect, useRef, useMemo, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { motion } from "motion/react";
@@ -7,7 +7,7 @@ import { portfolioData } from "../data/portfolio";
 const { experience } = portfolioData;
 
 const GRID_SIZE = 16;
-const PARTICLE_COUNT = 600;
+const PARTICLE_COUNT = 220;
 
 // ─── Three.js grid background ───────────────────────────────────────────────
 function GridBackground() {
@@ -161,17 +161,34 @@ const ACCENT_COLORS = [
 ];
 
 export function Experience() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [canvasOn, setCanvasOn] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setCanvasOn(true);
+      },
+      { rootMargin: "400px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="experience"
       className="relative overflow-hidden bg-[#0a0a0f] px-6 py-20 md:px-12 lg:px-24"
     >
-      {/* Three.js background */}
+      {canvasOn && (
       <div className="absolute inset-0 z-0 opacity-60">
         <Canvas
           camera={{ position: [0, 0, 12], fov: 50 }}
-          dpr={[1, 1.2]}
-          gl={{ alpha: true, antialias: true }}
+          dpr={1}
+          gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }}
         >
           <color attach="background" args={["#0a0a0f"]} />
           <ambientLight intensity={0.3} />
@@ -180,6 +197,7 @@ export function Experience() {
           </Suspense>
         </Canvas>
       </div>
+      )}
 
       {/* Vignette overlay */}
       <div

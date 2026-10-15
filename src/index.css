@@ -552,6 +552,13 @@ body {
   padding-bottom: 40px;
   display: flex;
   justify-content: center;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+#experience {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
 }
 
 @media (max-width: 1040px) {
